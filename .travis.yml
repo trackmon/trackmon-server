@@ -4,7 +4,7 @@ go:
   - 1.x
 
 install:
-  - "github.com/gorilla/mux"
+  - "go get github.com/gorilla/mux"
 
 script:
   - go build
