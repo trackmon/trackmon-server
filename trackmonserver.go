@@ -21,7 +21,10 @@ type Configuration struct {
 
 func CreateConfig() {
 	var Config Configuration
+
+	// Standard config
 	Config.ListeningAddress = ":80"
+
 	ByteJsonConfig, err := toprettyjson(Config)
 	if err != nil {
 		panic(err)
