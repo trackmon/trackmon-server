@@ -45,6 +45,17 @@ func VersionHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+func NewUserHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	// TODO: Write function which creates new users and stores them on the DB
+}
+
+func UserHandler(w http.ResponseWriter, r *http.Request) {
+	variables := mux.Vars(r)
+	// log.Printf("User %s wants info", string(variables["user_id"]))
+	// TODO: Check if user exists, if and if password correct, give him info
+}
+
 func main() {
 	fmt.Println("TRACKMON SERVER licensed under BSD 2-Clause")
 	fmt.Println("Please report bugs to https://github.com/trackmon/trackmon-server")
@@ -87,14 +98,16 @@ func main() {
 
 	// Configure router and server
 	r := mux.NewRouter()
-	r.HandleFunc("/", RootHandler) // Returnes 200 OK, can be used for health checks or homepage...
+	r.HandleFunc("/", RootHandler) // Returnes 200 OK, can be used for health checks
 	r.HandleFunc("/version", VersionHandler)
-
+	r.HandleFunc("/user", NewUserHandler)
+	r.HandleFunc("/user/{user_id}", UserHandler)
 	srv := &http.Server{
 		Handler: r,
 		Addr:    Config.ListeningAddress,
 	}
 
+	// Start the server
 	log.Println("Initialization complete")
 	srv.ListenAndServe()
 }
