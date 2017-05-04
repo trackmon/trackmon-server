@@ -81,5 +81,5 @@ func tojson(v interface{}) ([]byte, error) {
 }
 
 func toprettyjson(v interface{}) ([]byte, error) {
-	return json.MarshalIndent(v, "", "    ")
+	return json.MarshalIndent(v, "", "\t")
 }
