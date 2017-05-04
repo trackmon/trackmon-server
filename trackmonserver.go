@@ -10,6 +10,11 @@ import (
 	"net/http"
 )
 
+var (
+	ServerVersion string = "pre version"
+	APIVersion string = "pre api"
+)
+
 type Configuration struct {
 	ListeningAddress string
 }
