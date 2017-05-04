@@ -37,6 +37,11 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+func VersionHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "{\"serverversion\":\"%s\",\"apiversion\":\"%s\"}", ServerVersion, APIVersion)
+	w.WriteHeader(http.StatusOK)
+}
+
 func main() {
 	fmt.Println("trackmon server by Paul Kramme")
 	fmt.Println("Please report bugs to https://github.com/trackmon/trackmon-server")
@@ -66,7 +71,8 @@ func main() {
 
 	// Configure router and server
 	r := mux.NewRouter()
-	r.HandleFunc("/", RootHandler) // Returnes 200 OK, can be used for health checks.
+	r.HandleFunc("/", RootHandler) // Returnes 200 OK, can be used for health checks or homepage...
+	r.HandleFunc("/version", VersionHandler)
 
 	srv := &http.Server{
 		Handler: r,
