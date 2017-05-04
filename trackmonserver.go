@@ -43,7 +43,7 @@ func VersionHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	fmt.Println("trackmon server by Paul Kramme")
+	fmt.Println("TRACKMON SERVER")
 	fmt.Println("Please report bugs to https://github.com/trackmon/trackmon-server")
 
 	// Configure flags
@@ -59,7 +59,7 @@ func main() {
 	}
 
 	if *ShowLicenses == true {
-		fmt.Println("This project uses github.com/gorilla/mux")
+		fmt.Println("This project uses github.com/gorilla/mux\n")
 		fmt.Print(muxlicense)
 		fmt.Println("\n")
 
