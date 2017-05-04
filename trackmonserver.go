@@ -52,7 +52,7 @@ func NewUserHandler(w http.ResponseWriter, r *http.Request) {
 
 func UserHandler(w http.ResponseWriter, r *http.Request) {
 	variables := mux.Vars(r)
-	// log.Printf("User %s wants info", string(variables["user_id"]))
+	log.Printf("User %s wants info", string(variables["user_id"]))
 	// TODO: Check if user exists, if and if password correct, give him info
 }
 
