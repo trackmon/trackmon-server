@@ -64,6 +64,8 @@ func main() {
 	CreateConfigFlag := flag.Bool("createconfig", false, "Creates a standard configuration and exits")
 	ConfigLocation := flag.String("config", "./trackmonserv.conf", "Location of config file. Standard is ./trackmonserv")
 	ShowLicenses := flag.Bool("licenses", false, "Shows licenses and exits")
+	ShowVersion := flag.Bool("version", false, "Shows version and exits")
+	ShowJsonVersion:= flag.Bool("versionjson", false, "Shows version in json and exits")
 	flag.Parse()
 
 	// Check flags
@@ -84,6 +86,14 @@ func main() {
 		return
 	}
 
+	if *ShowVersion == true {
+		fmt.Printf("Server Version: %s\nAPI Version: %s\n", ServerVersion, APIVersion)
+		return
+	}
+
+	if *ShowJsonVersion == true {
+		fmt.Printf("{\"serverversion\":\"%s\",\"apiversion\":\"%s\"}", ServerVersion, APIVersion)
+	}
 	// Load config
 	var Config Configuration
 	Configfile, err := ioutil.ReadFile(*ConfigLocation)
