@@ -15,47 +15,6 @@ var (
 	APIVersion string = "pre api"
 )
 
-type Configuration struct {
-	ListeningAddress string
-}
-
-func CreateConfig() {
-	var Config Configuration
-
-	// Standard config
-	Config.ListeningAddress = ":80"
-
-	ByteJsonConfig, err := toprettyjson(Config)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("Writing configuration to ./trackmonserv.conf")
-	err = ioutil.WriteFile("./trackmonserv.conf", ByteJsonConfig, 0644)
-	if err != nil {
-		panic(err)
-	}
-}
-
-func RootHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-}
-
-func VersionHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "{\"serverversion\":\"%s\",\"apiversion\":\"%s\"}", ServerVersion, APIVersion)
-	w.WriteHeader(http.StatusOK)
-}
-
-func NewUserHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	// TODO: Write function which creates new users and stores them on the DB
-}
-
-func UserHandler(w http.ResponseWriter, r *http.Request) {
-	variables := mux.Vars(r)
-	log.Printf("User %s wants info", string(variables["user_id"]))
-	// TODO: Check if user exists, if and if password correct, give him info
-}
-
 func main() {
 	fmt.Println("TRACKMON SERVER licensed under BSD 2-Clause")
 	fmt.Println("Please report bugs to https://github.com/trackmon/trackmon-server")
@@ -73,7 +32,6 @@ func main() {
 		CreateConfig()
 		return
 	}
-
 	if *ShowLicenses == true {
 		fmt.Println("trackmon servers license\n")
 		fmt.Print(trackmonlicense)
@@ -85,15 +43,14 @@ func main() {
 
 		return
 	}
-
 	if *ShowVersion == true {
 		fmt.Printf("Server Version: %s\nAPI Version: %s\n", ServerVersion, APIVersion)
 		return
 	}
-
 	if *ShowJsonVersion == true {
 		fmt.Printf("{\"serverversion\":\"%s\",\"apiversion\":\"%s\"}", ServerVersion, APIVersion)
 	}
+
 	// Load config
 	var Config Configuration
 	Configfile, err := ioutil.ReadFile(*ConfigLocation)
@@ -112,6 +69,7 @@ func main() {
 	r.HandleFunc("/version", VersionHandler)
 	r.HandleFunc("/user", NewUserHandler)
 	r.HandleFunc("/user/{user_id}", UserHandler)
+	r.HandleFunc("/user/{user_id}/{account}", AccountHandler)
 	srv := &http.Server{
 		Handler: r,
 		Addr:    Config.ListeningAddress,
@@ -121,6 +79,88 @@ func main() {
 	log.Println("Initialization complete")
 	srv.ListenAndServe()
 }
+
+/*
+ ██████  ██████  ███    ██ ███████ ██  ██████
+██      ██    ██ ████   ██ ██      ██ ██
+██      ██    ██ ██ ██  ██ █████   ██ ██   ███
+██      ██    ██ ██  ██ ██ ██      ██ ██    ██
+ ██████  ██████  ██   ████ ██      ██  ██████
+*/
+
+type Configuration struct {
+	ListeningAddress string
+	DatabaseAddress string
+}
+
+func CreateConfig() {
+	var Config Configuration
+
+	// Standard config
+	Config.ListeningAddress = ":80"
+	Config.DatabaseAddress = "localhost:5432"
+
+	ByteJsonConfig, err := toprettyjson(Config)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Writing configuration to ./trackmonserv.conf")
+	err = ioutil.WriteFile("./trackmonserv.conf", ByteJsonConfig, 0644)
+	if err != nil {
+		panic(err)
+	}
+}
+
+/*
+██   ██  █████  ███    ██ ██████  ██      ███████ ██████
+██   ██ ██   ██ ████   ██ ██   ██ ██      ██      ██   ██
+███████ ███████ ██ ██  ██ ██   ██ ██      █████   ██████
+██   ██ ██   ██ ██  ██ ██ ██   ██ ██      ██      ██   ██
+██   ██ ██   ██ ██   ████ ██████  ███████ ███████ ██   ██
+*/
+
+func RootHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+}
+
+func VersionHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "{\"serverversion\":\"%s\",\"apiversion\":\"%s\"}", ServerVersion, APIVersion)
+	w.WriteHeader(http.StatusOK)
+}
+
+func NewUserHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	// TODO: Write function which creates new users and stores them on the DB
+}
+
+func UserHandler(w http.ResponseWriter, r *http.Request) {
+	variables := mux.Vars(r)
+	username, password, ok := r.BasicAuth()
+	if ok != true {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	} // All requests below here have given basic auth
+	log.Printf("User %s with pw %s wants info about account %s\n", username, password, string(variables["user_id"]))
+	// TODO: Check if user exists, if and if password correct, give him info
+}
+
+func AccountHandler(w http.ResponseWriter, r *http.Request) {
+	variables := mux.Vars(r)
+	username, password, ok := r.BasicAuth()
+	if ok != true {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	} // All requests below here have given basic auth
+	log.Printf("User %s wants account %s info", string(variables["user_id"]), string(variables["account"]))
+}
+
+/*
+     ██ ███████  ██████  ███    ██
+     ██ ██      ██    ██ ████   ██
+     ██ ███████ ██    ██ ██ ██  ██
+██   ██      ██ ██    ██ ██  ██ ██
+ █████  ███████  ██████  ██   ████
+*/
 
 func fromjson(src string, v interface{}) error {
 	return json.Unmarshal([]byte(src), v)
@@ -133,6 +173,14 @@ func tojson(v interface{}) ([]byte, error) {
 func toprettyjson(v interface{}) ([]byte, error) {
 	return json.MarshalIndent(v, "", "\t")
 }
+
+/*
+██      ██  ██████ ███████ ███    ██ ███████ ███████
+██      ██ ██      ██      ████   ██ ██      ██
+██      ██ ██      █████   ██ ██  ██ ███████ █████
+██      ██ ██      ██      ██  ██ ██      ██ ██
+███████ ██  ██████ ███████ ██   ████ ███████ ███████
+*/
 
 const (
 	muxlicense string = `Copyright (c) 2012 Rodrigo Moraes. All rights reserved.
