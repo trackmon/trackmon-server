@@ -16,7 +16,7 @@ var (
 )
 
 func main() {
-	fmt.Println("TRACKMON SERVER licensed under BSD 2-Clause")
+	fmt.Println("TRACKMON SERVER\nCopyright (c) 2017, Paul Kramme under BSD 2-Clause")
 	fmt.Println("Please report bugs to https://github.com/trackmon/trackmon-server")
 
 	// Configure flags
@@ -140,7 +140,7 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	} // All requests below here have given basic auth
-	log.Printf("User %s with pw %s wants info about account %s\n", username, password, string(variables["user_id"]))
+	log.Printf("User %s with pw %s wants info about all accounts of %s\n", username, password, string(variables["user_id"]))
 	// TODO: Check if user exists, if and if password correct, give him info
 }
 
@@ -151,7 +151,7 @@ func AccountHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	} // All requests below here have given basic auth
-	log.Printf("User %s wants account %s info", string(variables["user_id"]), string(variables["account"]))
+	log.Printf("User %s with pw %s wants info about account %s from %s\n", username, password, string(variables["account"]), string(variables["user_id"]))
 }
 
 /*
