@@ -4,8 +4,7 @@ echo "TRACKMON INSTALLER"
 echo "This script installs TRACKMON SERVER for you."
 sleep 2s
 
-if (whiptail --title "Trackmon Installer" --yesno "Do you want to install Trackmon Server? By installing you agree to the license.\n\
-It can be found at https://github.com/trackmon/trackmon-server" 8 78) then
+if (whiptail --title "Trackmon Installer" --yesno "Do you want to install Trackmon Server? By installing you agree to the license. It can be found at https://github.com/trackmon/trackmon-server" 8 78) then
   echo "Continuing installation"
 else
   echo "User selected No, aborting installation."
