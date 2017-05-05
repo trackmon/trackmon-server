@@ -12,7 +12,7 @@ import (
 
 var (
 	ServerVersion string = "pre version"
-	APIVersion string = "pre api"
+	APIVersion    string = "pre api"
 )
 
 func main() {
@@ -24,10 +24,10 @@ func main() {
 	ConfigLocation := flag.String("config", "./trackmonserv.conf", "Location of config file. Standard is ./trackmonserv")
 	ShowLicenses := flag.Bool("licenses", false, "Shows licenses and exits")
 	ShowVersion := flag.Bool("version", false, "Shows version and exits")
-	ShowJsonVersion:= flag.Bool("versionjson", false, "Shows version in json and exits")
-	flag.Parse()
+	ShowJsonVersion := flag.Bool("versionjson", false, "Shows version in json and exits")
 
 	// Check flags
+	flag.Parse()
 	if *CreateConfigFlag == true {
 		CreateConfig()
 		return
@@ -70,6 +70,7 @@ func main() {
 	r.HandleFunc("/user", NewUserHandler)
 	r.HandleFunc("/user/{user_id}", UserHandler)
 	r.HandleFunc("/user/{user_id}/{account}", AccountHandler)
+
 	srv := &http.Server{
 		Handler: r,
 		Addr:    Config.ListeningAddress,
@@ -90,7 +91,7 @@ func main() {
 
 type Configuration struct {
 	ListeningAddress string
-	DatabaseAddress string
+	DatabaseAddress  string
 }
 
 func CreateConfig() {
