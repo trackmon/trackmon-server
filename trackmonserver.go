@@ -133,7 +133,7 @@ func VersionHandler(w http.ResponseWriter, r *http.Request) {
 func NewUserHandler(w http.ResponseWriter, r *http.Request) {
 	username, password, ok := r.BasicAuth()
 	if ok != true {
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 	hashedpw, err := HashPassword(password)
@@ -154,6 +154,9 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	} // All requests below here have given basic auth
 	log.Printf("User %s with pw %s wants info about all accounts of %s\n", username, password, string(variables["user_id"]))
+	if usename != string(variables["user_id"]) {
+		w.WriteHeader(http.StatusForbidden)
+	}
 	// TODO: Check if user exists, if and if password correct, give him info
 }
 
