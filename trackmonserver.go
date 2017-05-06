@@ -67,8 +67,8 @@ func main() {
 	}
 
 	// Setup database connection
-	db_connection_string := fmt.Sprintf("dbname=trackmon_server_production user=trackmon host=%s password=%s", Config.DatabaseAddress, Config.DatabasePassword)
-	db, err := sql.Open("postgres", db_connection_string)
+	DatabaseConnectionString := fmt.Sprintf("dbname=trackmon_server_production user=trackmon host=%s password=%s", Config.DatabaseAddress, Config.DatabasePassword)
+	db, err := sql.Open("postgres", DatabaseConnectionString)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -152,12 +152,12 @@ func NewUserHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	hashedpw, err := HashPassword(password)
+	HashedPassword, err := HashPassword(password)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	log.Println(username, hashedpw)
+	log.Println(username, HashedPassword)
 	// TODO: Check if user exist in database
 	// TODO: IF NOT Create new user and write to database
 }
