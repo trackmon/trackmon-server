@@ -4,7 +4,7 @@
 1. Download the correct version for your OS from the release section
 2. Install `postgresql` and optionally `screen` with your package manager
 3. Run trackmon_db_setup.sh on the computer where you want to install the database:  
-    * The setup assumes that the database server is the same as the server where you want to install trackmon!If this is not the case, you have to configure postgreSQL to accept connections from the network. You can do this by changing these files:  
+    * The setup assumes that the database server is the same as the server where you want to install trackmon! If this is not the case, you have to configure postgreSQL to accept connections from the network. You can do this by changing these files:  
       * `pg_hba.conf`:  
           ```
           host all all 0.0.0.0/0 md5
