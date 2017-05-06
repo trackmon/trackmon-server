@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var (
@@ -130,8 +131,19 @@ func VersionHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func NewUserHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	// TODO: Write function which creates new users and stores them on the DB
+	username, password, ok := r.BasicAuth()
+	if ok != true {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	hashedpw, err := HashPassword(password)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	log.Println(username, hashedpw)
+	// TODO: Check if user exist in database
+	// TODO: IF NOT Create new user and write to database
 }
 
 func UserHandler(w http.ResponseWriter, r *http.Request) {
@@ -153,6 +165,24 @@ func AccountHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	} // All requests below here have given basic auth
 	log.Printf("User %s with pw %s wants info about account %s from %s\n", username, password, string(variables["account"]), string(variables["user_id"]))
+}
+
+/*
+ ██████ ██████  ██    ██ ██████  ████████
+██      ██   ██  ██  ██  ██   ██    ██
+██      ██████    ████   ██████     ██
+██      ██   ██    ██    ██         ██
+ ██████ ██   ██    ██    ██         ██
+*/
+
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 15)
+	return string(bytes), err
+}
+
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }
 
 /*
