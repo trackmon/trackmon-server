@@ -68,9 +68,9 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", RootHandler) // Returnes 200 OK, can be used for health checks
 	r.HandleFunc("/version", VersionHandler)
-	r.HandleFunc("/user", NewUserHandler)
 	r.HandleFunc("/user/{user_id}", UserHandler)
 	r.HandleFunc("/user/{user_id}/{account}", AccountHandler)
+	r.HandleFunc("/signup", NewUserHandler)
 
 	srv := &http.Server{
 		Handler: r,
@@ -176,7 +176,7 @@ func AccountHandler(w http.ResponseWriter, r *http.Request) {
 */
 
 func HashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 15)
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 12)
 	return string(bytes), err
 }
 
