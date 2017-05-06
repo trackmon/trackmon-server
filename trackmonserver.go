@@ -80,11 +80,19 @@ func main() {
 
 	// Configure router and server
 	r := mux.NewRouter()
+
 	r.HandleFunc("/", RootHandler) // Returnes 200 OK, can be used for health checks
 	r.HandleFunc("/version", VersionHandler)
-	r.HandleFunc("/user/{user_id}", UserHandler)
-	r.HandleFunc("/user/{user_id}/{account}", AccountHandler)
-	r.HandleFunc("/signup", NewUserHandler)
+
+	r.HandleFunc("/user/{user_id}", func(w http.ResponseWriter, r *http.Request) {
+		UserHandler(w, r, db)
+	})
+	r.HandleFunc("/user/{user_id}/{account}", func(w http.ResponseWriter, r *http.Request) {
+		AccountHandler(w, r, db)
+	})
+	r.HandleFunc("/signup", func(w http.ResponseWriter, r *http.Request) {
+		NewUserHandler(w, r, db)
+	})
 
 	srv := &http.Server{
 		Handler: r,
@@ -146,7 +154,7 @@ func VersionHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func NewUserHandler(w http.ResponseWriter, r *http.Request) {
+func NewUserHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	username, password, ok := r.BasicAuth()
 	if ok != true {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -162,7 +170,7 @@ func NewUserHandler(w http.ResponseWriter, r *http.Request) {
 	// TODO: IF NOT Create new user and write to database
 }
 
-func UserHandler(w http.ResponseWriter, r *http.Request) {
+func UserHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	variables := mux.Vars(r)
 	username, password, ok := r.BasicAuth()
 	if ok != true {
@@ -176,7 +184,7 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 	// TODO: Check if user exists, if and if password correct, give him info
 }
 
-func AccountHandler(w http.ResponseWriter, r *http.Request) {
+func AccountHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	variables := mux.Vars(r)
 	username, password, ok := r.BasicAuth()
 	if ok != true {
