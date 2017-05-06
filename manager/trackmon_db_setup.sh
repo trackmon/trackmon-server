@@ -17,3 +17,4 @@ echo "Trying to create postgres user trackmon"
 sudo -u postgres psql -d template1 -c "CREATE USER trackmon CREATEDB;"
 echo "Trying to create database trackmon_server_production"
 sudo -u postgres psql -d template1 -c "CREATE DATABASE trackmon_server_production OWNER trackmon;"
+
