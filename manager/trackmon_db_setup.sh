@@ -11,10 +11,14 @@ else
   exit 1
 fi
 
+whiptail --passwordbox "Enter your database password. REMEMBER THIS!" 8 78 --title "Trackmon Database Setup" 2> password
+PASSWORD=$(cat password)
+rm password
 echo "Creating new user trackmon"
 sudo adduser --disabled-login --gecos 'Trackmon' trackmon
 echo "Trying to create postgres user trackmon"
-sudo -u postgres psql -d template1 -c "CREATE USER trackmon CREATEDB;"
+sudo -u postgres psql -d template1 -c "CREATE USER trackmon CREATEDB PASSWORD '$PASSWORD';"
 echo "Trying to create database trackmon_server_production"
 sudo -u postgres psql -d template1 -c "CREATE DATABASE trackmon_server_production OWNER trackmon;"
 
+whiptail --title "Trackmon Database Setup" --infobox "Setup finished." 8 78

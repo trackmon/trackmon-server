@@ -9,6 +9,8 @@ import (
 	"log"
 	"net/http"
 	"golang.org/x/crypto/bcrypt"
+	"database/sql"
+	_ "github.com/lib/pq"
 )
 
 var (
@@ -64,6 +66,18 @@ func main() {
 		panic(err)
 	}
 
+	// Setup database connection
+	db_connection_string := fmt.Sprintf("dbname=trackmon_server_production user=trackmon host=%s password=%s", Config.DatabaseAddress, Config.DatabasePassword)
+	db, err := sql.Open("postgres", db_connection_string)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+	err = db.Ping()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	// Configure router and server
 	r := mux.NewRouter()
 	r.HandleFunc("/", RootHandler) // Returnes 200 OK, can be used for health checks
@@ -93,6 +107,7 @@ func main() {
 type Configuration struct {
 	ListeningAddress string
 	DatabaseAddress  string
+	DatabasePassword string
 }
 
 func CreateConfig() {
@@ -100,7 +115,8 @@ func CreateConfig() {
 
 	// Standard config
 	Config.ListeningAddress = ":80"
-	Config.DatabaseAddress = "localhost:5432"
+	Config.DatabaseAddress = "localhost"
+	Config.DatabasePassword = ""
 
 	ByteJsonConfig, err := toprettyjson(Config)
 	if err != nil {
