@@ -11,6 +11,8 @@ else
   exit 1
 fi
 
+echo "Creating new user trackmon"
+sudo adduser --disabled-login --gecos 'Trackmon' trackmon
 echo "Trying to create postgres user trackmon"
 sudo -u postgres psql -d template1 -c "CREATE USER trackmon CREATEDB;"
 echo "Trying to create database trackmon_server_production"
