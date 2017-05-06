@@ -101,7 +101,7 @@ func main() {
 
 	// Start the server
 	log.Println("Initialization complete")
-	srv.ListenAndServe()
+	log.Fatal(srv.ListenAndServe())
 }
 
 /*
