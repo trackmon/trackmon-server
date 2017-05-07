@@ -118,6 +118,10 @@ type Configuration struct {
 	DatabasePassword string
 }
 
+func RecreateConfig(path string) {
+	return
+}
+
 func CreateConfig() {
 	var Config Configuration
 
