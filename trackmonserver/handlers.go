@@ -2,11 +2,11 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
+	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"log"
 	"net/http"
-	"fmt"
-	"github.com/gorilla/mux"
 )
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {

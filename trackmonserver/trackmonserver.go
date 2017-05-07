@@ -2,11 +2,11 @@ package main
 
 import (
 	"database/sql"
-	"io/ioutil"
 	"flag"
 	"fmt"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
+	"io/ioutil"
 
 	"log"
 	"net/http"
