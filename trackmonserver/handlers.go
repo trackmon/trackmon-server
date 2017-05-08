@@ -34,20 +34,6 @@ func NewUserHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	// TODO: IF NOT Create new user and write to database
 }
 
-func UserHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
-	variables := mux.Vars(r)
-	username, password, ok := r.BasicAuth()
-	if ok != true {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	} // All requests below here have given basic auth
-	log.Printf("User %s with pw %s wants info about all accounts of %s\n", username, password, string(variables["user_id"]))
-	if username != string(variables["user_id"]) {
-		w.WriteHeader(http.StatusForbidden)
-	}
-	// TODO: Check if user exists, if and if password correct, give him info
-}
-
 func AccountHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	variables := mux.Vars(r)
 	username, password, ok := r.BasicAuth()

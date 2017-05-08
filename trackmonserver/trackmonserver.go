@@ -83,13 +83,15 @@ func main() {
 	r.HandleFunc("/", RootHandler) // Returnes 200 OK, can be used for health checks
 	r.HandleFunc("/version", VersionHandler)
 
-	r.HandleFunc("/user/{user_id}", func(w http.ResponseWriter, r *http.Request) {
-		UserHandler(w, r, db)
+	r.HandleFunc("/account" func(w http.ResponseWriter, r *http.Request) {
+		AllAccountHandler(w, r, db)
 	})
-	r.HandleFunc("/user/{user_id}/{account}", func(w http.ResponseWriter, r *http.Request) {
-		AccountHandler(w, r, db)
+
+	r.HandleFunc("/account/{account}", func(w http.ResponseWriter, r *http.Request) {
+		SpecificAccountHandler(w, r, db)
 	})
-	r.HandleFunc("/signup", func(w http.ResponseWriter, r *http.Request) {
+	
+	r.HandleFunc("/user", func(w http.ResponseWriter, r *http.Request) {
 		NewUserHandler(w, r, db)
 	})
 
