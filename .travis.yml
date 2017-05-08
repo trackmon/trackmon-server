@@ -9,6 +9,4 @@ install:
   - "go get github.com/lib/pq"
 
 script:
-  - cd trackmonserver
   - go build
-  - cd
