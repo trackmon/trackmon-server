@@ -34,6 +34,14 @@ func NewUserHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	// TODO: IF NOT Create new user and write to database
 }
 
+func AllAccountHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+	fmt.Println("Not yet implemented.")
+}
+
+func SpecificAccountHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+	fmt.Println("Not yet implemented")
+}
+
 func AccountHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	variables := mux.Vars(r)
 	username, password, ok := r.BasicAuth()

@@ -7,7 +7,6 @@ import (
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"io/ioutil"
-
 	"log"
 	"net/http"
 )
@@ -83,7 +82,7 @@ func main() {
 	r.HandleFunc("/", RootHandler) // Returnes 200 OK, can be used for health checks
 	r.HandleFunc("/version", VersionHandler)
 
-	r.HandleFunc("/account" func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/account", func(w http.ResponseWriter, r *http.Request) {
 		AllAccountHandler(w, r, db)
 	})
 
