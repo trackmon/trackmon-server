@@ -1,9 +1,5 @@
 #/bin/bash
 
-echo "TRACKMON DATABASE SETUP"
-echo "This script setups the TRACKMON SERVER DATABASE for you."
-sleep 2s
-
 if (whiptail --title "Trackmon Database Setup" --yesno "Do you want to setup the Trackmon Server Database? This requires postgreSQL to be installed!" 8 78) then
   echo "Continuing setup"
 else
