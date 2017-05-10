@@ -11,9 +11,20 @@ import (
 	"net/http"
 )
 
-var (
+const (
+	test string = "Hello World!"
+
 	ServerVersion string = "pre version"
 	APIVersion    string = "pre api"
+
+	DatabaseSetupUsersTable string = "CREATE TABLE IF NOT EXISTS users (username varchar(255) PRIMARY KEY NOT NULL, passwordhash varchar(64) NOT NULL, joineddate TIMESTAMP, userid SERIAL)"
+	DatabaseSetupAccountsTable string = "CREATE TABLE IF NOT EXISTS accounts (accountid SERIAL PRIMARY KEY NOT NULL, username varchar(255) REFERENCES users(username), currency varchar(3) NOT NULL, balance INT)"
+	DatabaseSetupHistoryTable string = "CREATE TABLE IF NOT EXISTS history (accountid SERIAL REFERENCES accounts(accountid), name varchar(255) NOT NULL, time TIMESTAMP NOT NULL, amount INT NOT NULL, historyid SERIAL NOT NULL PRIMARY KEY)"
+	GetUserQuery string = "SELECT username, passwordhash FROM users WHERE username = $1"
+)
+
+var (
+	PrepGetUserQuery *sql.Stmt
 )
 
 func main() {
@@ -76,6 +87,17 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// Prepare database statements and setup database
+	DatabaseSetup(db)
+
+	PrepGetUserQuery, err := db.Prepare(GetUserQuery)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("REMOVE SURPRESSOR AT LINE 98")
+	var _ = PrepGetUserQuery
+
 	// Configure router and server
 	r := mux.NewRouter()
 
@@ -86,12 +108,12 @@ func main() {
 		AllAccountHandler(w, r, db)
 	})
 
-	r.HandleFunc("/account/{account}", func(w http.ResponseWriter, r *http.Request) {
-		SpecificAccountHandler(w, r, db)
+	r.HandleFunc("/account/{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) {
+		HistoryHandler(w, r, db)
 	})
 	
 	r.HandleFunc("/user", func(w http.ResponseWriter, r *http.Request) {
-		NewUserHandler(w, r, db)
+		UserHandler(w, r, db)
 	})
 
 	srv := &http.Server{
@@ -100,6 +122,21 @@ func main() {
 	}
 
 	// Start the server
-	log.Println("Initialization complete")
+	log.Println("Initialization Complete")
 	log.Fatal(srv.ListenAndServe())
+}
+
+func DatabaseSetup(db *sql.DB) {
+	_, err := db.Exec(DatabaseSetupUsersTable)
+	if err != nil {
+		panic(err)
+	}
+	_, err = db.Exec(DatabaseSetupAccountsTable)
+	if err != nil {
+		panic(err)
+	}
+	_, err = db.Exec(DatabaseSetupHistoryTable)
+	if err != nil {
+		panic(err)
+	}
 }

@@ -3,7 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"github.com/gorilla/mux"
+	//"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"log"
 	"net/http"
@@ -15,10 +15,9 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 
 func VersionHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "{\"serverversion\":\"%s\",\"apiversion\":\"%s\"}", ServerVersion, APIVersion)
-	w.WriteHeader(http.StatusOK)
 }
 
-func NewUserHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+func UserHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	username, password, ok := r.BasicAuth()
 	if ok != true {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -28,26 +27,36 @@ func NewUserHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
-	}
-	log.Println(username, HashedPassword)
+	} // NOTE: EVERYTHING BELOW HERE HAS AUTHENTICATION, BUT IS NOT ACCESS CHECKED!
 	// TODO: Check if user exist in database
 	// TODO: IF NOT Create new user and write to database
+	log.Println(username, HashedPassword, test)
 }
 
 func AllAccountHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
-	fmt.Println("Not yet implemented.")
-}
-
-func SpecificAccountHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
-	fmt.Println("Not yet implemented")
-}
-
-func AccountHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
-	variables := mux.Vars(r)
 	username, password, ok := r.BasicAuth()
 	if ok != true {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
-	} // All requests below here have given basic auth
-	log.Printf("User %s with pw %s wants info about account %s from %s\n", username, password, string(variables["account"]), string(variables["user_id"]))
+	}
+	HashedPassword, err := HashPassword(password)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	} // NOTE: EVERYTHING BELOW HERE HAS AUTHENTICATION, BUT IS NOT ACCESS CHECKED!
+	log.Println(username, HashedPassword, test)
+}
+
+func HistoryHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+	username, password, ok := r.BasicAuth()
+	if ok != true {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	HashedPassword, err := HashPassword(password)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	} // NOTE: EVERYTHING BELOW HERE HAS AUTHENTICATION, BUT IS NOT ACCESS CHECKED!
+	log.Println(username, HashedPassword, test)
 }
