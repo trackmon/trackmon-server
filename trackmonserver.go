@@ -95,8 +95,7 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println("REMOVE SURPRESSOR AT LINE 98")
-	var _ = PrepGetUserQuery
+	var _ = PrepGetUserQuery // FIXME: Remove when variable is used
 
 	// Configure router and server
 	r := mux.NewRouter()
@@ -119,6 +118,11 @@ func main() {
 	srv := &http.Server{
 		Handler: r,
 		Addr:    Config.ListeningAddress,
+	}
+
+	// Check update
+	if Config.AutoUpdateChecker != false {
+		go checkupdate("https://api.github.com/repo/trackmon/trackmon-server/releases/latest", ServerVersion)
 	}
 
 	// Start the server

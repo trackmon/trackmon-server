@@ -9,6 +9,7 @@ type Configuration struct {
 	ListeningAddress string
 	DatabaseAddress  string
 	DatabasePassword string
+	AutoUpdateChecker bool
 }
 
 func RecreateConfig(path string) {
@@ -22,6 +23,7 @@ func CreateConfig() {
 	Config.ListeningAddress = ":80"
 	Config.DatabaseAddress = "localhost"
 	Config.DatabasePassword = ""
+	Config.AutoUpdateChecker = true
 
 	ByteJsonConfig, err := toprettyjson(Config)
 	if err != nil {
