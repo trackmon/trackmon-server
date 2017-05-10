@@ -6,9 +6,9 @@ import (
 )
 
 type Configuration struct {
-	ListeningAddress string
-	DatabaseAddress  string
-	DatabasePassword string
+	ListeningAddress  string
+	DatabaseAddress   string
+	DatabasePassword  string
 	AutoUpdateChecker bool
 }
 

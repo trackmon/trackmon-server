@@ -17,10 +17,10 @@ const (
 	ServerVersion string = "pre version"
 	APIVersion    string = "pre api"
 
-	DatabaseSetupUsersTable string = "CREATE TABLE IF NOT EXISTS users (username varchar(255) PRIMARY KEY NOT NULL, passwordhash varchar(64) NOT NULL, joineddate TIMESTAMP, userid SERIAL)"
+	DatabaseSetupUsersTable    string = "CREATE TABLE IF NOT EXISTS users (username varchar(255) PRIMARY KEY NOT NULL, passwordhash varchar(64) NOT NULL, joineddate TIMESTAMP, userid SERIAL)"
 	DatabaseSetupAccountsTable string = "CREATE TABLE IF NOT EXISTS accounts (accountid SERIAL PRIMARY KEY NOT NULL, username varchar(255) REFERENCES users(username), currency varchar(3) NOT NULL, balance INT)"
-	DatabaseSetupHistoryTable string = "CREATE TABLE IF NOT EXISTS history (accountid SERIAL REFERENCES accounts(accountid), name varchar(255) NOT NULL, time TIMESTAMP NOT NULL, amount INT NOT NULL, historyid SERIAL NOT NULL PRIMARY KEY)"
-	GetUserQuery string = "SELECT username, passwordhash FROM users WHERE username = $1"
+	DatabaseSetupHistoryTable  string = "CREATE TABLE IF NOT EXISTS history (accountid SERIAL REFERENCES accounts(accountid), name varchar(255) NOT NULL, time TIMESTAMP NOT NULL, amount INT NOT NULL, historyid SERIAL NOT NULL PRIMARY KEY)"
+	GetUserQuery               string = "SELECT username, passwordhash FROM users WHERE username = $1"
 )
 
 var (
@@ -110,7 +110,7 @@ func main() {
 	r.HandleFunc("/account/{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) {
 		HistoryHandler(w, r, db)
 	})
-	
+
 	r.HandleFunc("/user", func(w http.ResponseWriter, r *http.Request) {
 		UserHandler(w, r, db)
 	})

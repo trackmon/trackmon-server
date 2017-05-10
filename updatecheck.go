@@ -1,9 +1,9 @@
 package main
 
 import (
-	"net/http"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 )
 
 type GithubReleasesAssetsApiResponse struct {
@@ -11,7 +11,7 @@ type GithubReleasesAssetsApiResponse struct {
 }
 
 type GithubReleasesApiResponse struct {
-	Message string
+	Message  string
 	Tag_name string
 	Html_url string
 	Assets   []GithubReleasesAssetsApiResponse
