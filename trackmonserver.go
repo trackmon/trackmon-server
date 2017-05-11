@@ -21,11 +21,11 @@ const (
 	DatabaseSetupAccountsTable string = "CREATE TABLE IF NOT EXISTS accounts (accountid SERIAL PRIMARY KEY NOT NULL, username varchar(255) REFERENCES users(username), currency varchar(3) NOT NULL, balance INT)"
 	DatabaseSetupHistoryTable  string = "CREATE TABLE IF NOT EXISTS history (accountid SERIAL REFERENCES accounts(accountid), name varchar(255) NOT NULL, time TIMESTAMP NOT NULL, amount INT NOT NULL, historyid SERIAL NOT NULL PRIMARY KEY)"
 	GetUserQuery               string = "SELECT passwordhash FROM users WHERE username = $1"
-	DoesUserExistQuery string = "SELECT count(1) FROM users WHERE username = $1"
+	DoesUserExistQuery         string = "SELECT count(1) FROM users WHERE username = $1"
 )
 
 var (
-	PrepGetUserQuery *sql.Stmt
+	PrepGetUserQuery       *sql.Stmt
 	PrepDoesUserExistQuery *sql.Stmt
 )
 
