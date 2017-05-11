@@ -5,7 +5,6 @@ import (
 	"fmt"
 	//"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
-	"log"
 	"net/http"
 )
 
@@ -23,14 +22,15 @@ func UserHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	HashedPassword, err := HashPassword(password)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+	var DoesExist int // sigh... why no bool?
+	PrepDoesUserExistQuery.QueryRow(username).Scan(&DoesExist)
+	if DoesExist == 1 {
+		w.WriteHeader(http.StatusForbidden)
 		return
-	} // NOTE: EVERYTHING BELOW HERE HAS AUTHENTICATION, BUT IS NOT ACCESS CHECKED!
+	}
+	var _ = password
 	// TODO: Check if user exist in database
 	// TODO: IF NOT Create new user and write to database
-	log.Println(username, HashedPassword, test)
 }
 
 func AllAccountHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
@@ -43,8 +43,11 @@ func AllAccountHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
-	} // NOTE: EVERYTHING BELOW HERE HAS AUTHENTICATION, BUT IS NOT ACCESS CHECKED!
-	log.Println(username, HashedPassword, test)
+	}
+	if AuthCheck(username, HashedPassword, db) != true {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	} // ALL USERS BELOW HERE ARE AUTHENTICATED
 }
 
 func HistoryHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
@@ -57,6 +60,9 @@ func HistoryHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
-	} // NOTE: EVERYTHING BELOW HERE HAS AUTHENTICATION, BUT IS NOT ACCESS CHECKED!
-	log.Println(username, HashedPassword, test)
+	}
+	if AuthCheck(username, HashedPassword, db) != true {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
 }

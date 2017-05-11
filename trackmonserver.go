@@ -20,11 +20,13 @@ const (
 	DatabaseSetupUsersTable    string = "CREATE TABLE IF NOT EXISTS users (username varchar(255) PRIMARY KEY NOT NULL, passwordhash varchar(64) NOT NULL, joineddate TIMESTAMP, userid SERIAL)"
 	DatabaseSetupAccountsTable string = "CREATE TABLE IF NOT EXISTS accounts (accountid SERIAL PRIMARY KEY NOT NULL, username varchar(255) REFERENCES users(username), currency varchar(3) NOT NULL, balance INT)"
 	DatabaseSetupHistoryTable  string = "CREATE TABLE IF NOT EXISTS history (accountid SERIAL REFERENCES accounts(accountid), name varchar(255) NOT NULL, time TIMESTAMP NOT NULL, amount INT NOT NULL, historyid SERIAL NOT NULL PRIMARY KEY)"
-	GetUserQuery               string = "SELECT username, passwordhash FROM users WHERE username = $1"
+	GetUserQuery               string = "SELECT passwordhash FROM users WHERE username = $1"
+	DoesUserExistQuery string = "SELECT count(1) FROM users WHERE username = $1"
 )
 
 var (
 	PrepGetUserQuery *sql.Stmt
+	PrepDoesUserExistQuery *sql.Stmt
 )
 
 func main() {
@@ -90,12 +92,17 @@ func main() {
 	// Prepare database statements and setup database
 	DatabaseSetup(db)
 
-	PrepGetUserQuery, err := db.Prepare(GetUserQuery)
+	PrepGetUserQuery, err = db.Prepare(GetUserQuery)
 	if err != nil {
 		panic(err)
 	}
+	defer PrepGetUserQuery.Close()
 
-	var _ = PrepGetUserQuery // FIXME: Remove when variable is used
+	PrepDoesUserExistQuery, err = db.Prepare(DoesUserExistQuery)
+	if err != nil {
+		panic(err)
+	}
+	defer PrepDoesUserExistQuery.Close()
 
 	// Configure router and server
 	r := mux.NewRouter()
