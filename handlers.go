@@ -6,10 +6,12 @@ import (
 	//"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"net/http"
+	"time"
+	"log"
 )
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
+	return
 }
 
 func VersionHandler(w http.ResponseWriter, r *http.Request) {
@@ -22,15 +24,31 @@ func UserHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	var DoesExist int // sigh... why no bool?
-	PrepDoesUserExistQuery.QueryRow(username).Scan(&DoesExist)
-	if DoesExist == 1 {
-		w.WriteHeader(http.StatusForbidden)
-		return
+	switch r.Method {
+	case "POST":
+		var DoesExist int // sigh... why no bool?
+		PrepDoesUserExistQuery.QueryRow(username).Scan(&DoesExist)
+		if DoesExist == 1 {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+		HashedPassword, err := HashPassword(password)
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		SignupTime := time.Now().Format(time.RFC3339)
+		_, err = PrepAddNewUser.Exec(username, HashedPassword, SignupTime)
+		if err != nil {
+			log.Println("UserHandler:", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		// TODO: IF NOT Create new user and write to database
+	case "DELETE":
+		log.Println("Deleting user")
 	}
-	var _ = password
-	// TODO: Check if user exist in database
-	// TODO: IF NOT Create new user and write to database
 }
 
 func AllAccountHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
