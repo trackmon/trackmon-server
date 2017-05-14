@@ -5,9 +5,9 @@ import (
 	"fmt"
 	//"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
+	"log"
 	"net/http"
 	"time"
-	"log"
 )
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
@@ -28,7 +28,7 @@ func UserHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	case "POST":
 		var DoesExist int // sigh... why no bool?
 		PrepDoesUserExistQuery.QueryRow(username).Scan(&DoesExist)
-		if DoesExist == 1 {
+		if DoesExist == 1 { // 1 == true
 			w.WriteHeader(http.StatusForbidden)
 			return
 		}
@@ -48,6 +48,9 @@ func UserHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		// TODO: IF NOT Create new user and write to database
 	case "DELETE":
 		log.Println("Deleting user")
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
 	}
 }
 
