@@ -1,0 +1,8 @@
+[Unit]
+Description=Trackmon Server
+
+[Service]
+ExecStart=/usr/local/bin/trackmon-server -config=/etc/trackmon/trackmonserv.conf
+
+[Install]
+WantedBy=multi-user.target
