@@ -12,13 +12,11 @@ import (
 )
 
 const (
-	test string = "Hello World!"
-
 	ServerVersion string = "pre version"
 	APIVersion    string = "pre api"
 
 	DatabaseSetupUsersTable    string = "CREATE TABLE IF NOT EXISTS users (username varchar(255) PRIMARY KEY NOT NULL, passwordhash varchar(64) NOT NULL, joineddate TIMESTAMP, userid SERIAL)"
-	DatabaseSetupAccountsTable string = "CREATE TABLE IF NOT EXISTS accounts (accountid SERIAL PRIMARY KEY NOT NULL, username varchar(255) REFERENCES users(username), currency varchar(3) NOT NULL, balance INT)"
+	DatabaseSetupAccountsTable string = "CREATE TABLE IF NOT EXISTS accounts (accountid SERIAL PRIMARY KEY NOT NULL, username varchar(255) REFERENCES users(username), currency varchar(3) NOT NULL, balance INT, name varchar(255))"
 	DatabaseSetupHistoryTable  string = "CREATE TABLE IF NOT EXISTS history (accountid SERIAL REFERENCES accounts(accountid), name varchar(255) NOT NULL, time TIMESTAMP NOT NULL, amount INT NOT NULL, historyid SERIAL NOT NULL PRIMARY KEY)"
 
 	GetUserQuery                   string = "SELECT passwordhash FROM users WHERE username = $1"
@@ -27,6 +25,8 @@ const (
 	DeleteExistingUser             string = "DELETE FROM users WHERE username = $1"
 	DeleteAccountsFromExistingUser string = "DELETE FROM accounts WHERE username = $1"
 	DeleteHistoryFromExistingUser  string = "DELETE FROM users WHERE username = $1"
+	AddNewAccount                  string = "INSERT INTO accounts (username, name, currency, balance) VALUES ($1, $2, $3, $4) RETURNING accountid"
+	AddNewHistoryObject            string = "INSERT INTO history (accountid, name, time, amount) VALUES ($1, $2, $3, $4)"
 )
 
 var (
@@ -36,10 +36,13 @@ var (
 	PrepDeleteExistingUser             *sql.Stmt
 	PrepDeleteAccountsFromExistingUser *sql.Stmt
 	PrepDeleteHistoryFromExistingUser  *sql.Stmt
+	PrepAddNewAccount                  *sql.Stmt
+	PrepAddNewHistoryObject            *sql.Stmt
 )
 
 func main() {
-	fmt.Println("TRACKMON SERVER\nCopyright (c) 2017, Paul Kramme under BSD 2-Clause")
+	fmt.Printf("TRACKMON SERVER %s", ServerVersion)
+	fmt.Println("Copyright (c) 2017, Paul Kramme\nAll rights reserved.")
 	fmt.Println("Please report bugs to https://github.com/trackmon/trackmon-server")
 
 	// Configure flags
@@ -136,6 +139,18 @@ func main() {
 		panic(err)
 	}
 	defer PrepDeleteHistoryFromExistingUser.Close()
+
+	PrepAddNewAccount, err = db.Prepare(AddNewAccount)
+	if err != nil {
+		panic(err)
+	}
+	defer PrepAddNewAccount.Close()
+
+	PrepAddNewHistoryObject, err = db.Prepare(AddNewHistoryObject)
+	if err != nil {
+		panic(err)
+	}
+	defer PrepAddNewHistoryObject.Close()
 
 	// Configure router and server
 	r := mux.NewRouter()

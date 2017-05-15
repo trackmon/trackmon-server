@@ -5,6 +5,7 @@ import (
 	"fmt"
 	//"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
@@ -87,15 +88,44 @@ func AllAccountHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	HashedPassword, err := HashPassword(password)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	if AuthCheck(username, HashedPassword, db) != true {
+	if AuthCheck(username, password, db) != true {
 		w.WriteHeader(http.StatusForbidden)
 		return
 	} // ALL USERS BELOW HERE ARE AUTHENTICATED
+	switch r.Method {
+	case "POST":
+		var NewAccount NewAccount
+		defer r.Body.Close()
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		err = fromjson(string(body), &NewAccount)
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		var NewAccountID int
+		err = PrepAddNewAccount.QueryRow(username, NewAccount.Accountname, NewAccount.Currency, NewAccount.Initialamount).Scan(&NewAccountID)
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		HistoryTime := time.Now().Format(time.RFC3339)
+		_, err = PrepAddNewHistoryObject.Exec(NewAccountID, string("Initial amount"), HistoryTime, NewAccount.Initialamount)
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+	case "PUT":
+		// Update all accounts (even if only one is updated)
+	}
 }
 
 func HistoryHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
@@ -104,12 +134,7 @@ func HistoryHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	HashedPassword, err := HashPassword(password)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	if AuthCheck(username, HashedPassword, db) != true {
+	if AuthCheck(username, password, db) != true {
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
