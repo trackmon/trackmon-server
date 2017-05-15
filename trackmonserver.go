@@ -21,21 +21,21 @@ const (
 	DatabaseSetupAccountsTable string = "CREATE TABLE IF NOT EXISTS accounts (accountid SERIAL PRIMARY KEY NOT NULL, username varchar(255) REFERENCES users(username), currency varchar(3) NOT NULL, balance INT)"
 	DatabaseSetupHistoryTable  string = "CREATE TABLE IF NOT EXISTS history (accountid SERIAL REFERENCES accounts(accountid), name varchar(255) NOT NULL, time TIMESTAMP NOT NULL, amount INT NOT NULL, historyid SERIAL NOT NULL PRIMARY KEY)"
 
-	GetUserQuery               string = "SELECT passwordhash FROM users WHERE username = $1"
-	DoesUserExistQuery         string = "SELECT count(1) FROM users WHERE username = $1"
-	AddNewUser                 string = "INSERT INTO users (username, passwordhash, joineddate) VALUES ($1, $2, $3)"
-	DeleteExistingUser string = "DELETE FROM users WHERE username = $1"
+	GetUserQuery                   string = "SELECT passwordhash FROM users WHERE username = $1"
+	DoesUserExistQuery             string = "SELECT count(1) FROM users WHERE username = $1"
+	AddNewUser                     string = "INSERT INTO users (username, passwordhash, joineddate) VALUES ($1, $2, $3)"
+	DeleteExistingUser             string = "DELETE FROM users WHERE username = $1"
 	DeleteAccountsFromExistingUser string = "DELETE FROM accounts WHERE username = $1"
-	DeleteHistoryFromExistingUser string = "DELETE FROM users WHERE username = $1"
+	DeleteHistoryFromExistingUser  string = "DELETE FROM users WHERE username = $1"
 )
 
 var (
-	PrepGetUserQuery       *sql.Stmt
-	PrepDoesUserExistQuery *sql.Stmt
-	PrepAddNewUser         *sql.Stmt
-	PrepDeleteExistingUser *sql.Stmt
+	PrepGetUserQuery                   *sql.Stmt
+	PrepDoesUserExistQuery             *sql.Stmt
+	PrepAddNewUser                     *sql.Stmt
+	PrepDeleteExistingUser             *sql.Stmt
 	PrepDeleteAccountsFromExistingUser *sql.Stmt
-	PrepDeleteHistoryFromExistingUser *sql.Stmt
+	PrepDeleteHistoryFromExistingUser  *sql.Stmt
 )
 
 func main() {

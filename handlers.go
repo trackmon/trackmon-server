@@ -32,14 +32,14 @@ func UserHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			w.WriteHeader(http.StatusForbidden)
 			return
 		}
-		
+
 		HashedPassword, err := HashPassword(password)
 		if err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		
+
 		SignupTime := time.Now().Format(time.RFC3339)
 		_, err = PrepAddNewUser.Exec(username, HashedPassword, SignupTime)
 		if err != nil {
@@ -53,7 +53,7 @@ func UserHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			w.WriteHeader(http.StatusForbidden)
 			return
 		} // ALL USERS BELOW HERE ARE AUTHENTICATED
-		
+
 		_, err := PrepDeleteExistingUser.Exec(username)
 		if err != nil {
 			log.Println(err)
