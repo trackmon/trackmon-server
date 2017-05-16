@@ -122,6 +122,7 @@ func AllAccountHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
+		fmt.Fprintf(w, "{\"newaccountid\":%d}", NewAccountID)
 
 	case "PUT":
 		// Update all accounts (even if only one is updated)
