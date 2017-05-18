@@ -5,5 +5,5 @@ type Configuration struct {
 	DatabaseAddress       string
 	DatabasePassword      string
 	AutoUpdateChecker     bool
-	LogFileLocationPrefix string
+	LogFileLocation string
 }

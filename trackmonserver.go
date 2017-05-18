@@ -10,7 +10,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"time"
 )
 
 const (
@@ -173,9 +172,7 @@ func main() {
 		go checkupdate("https://api.github.com/repo/trackmon/trackmon-server/releases/latest", ServerVersion)
 	}
 
-	tStart := time.Now().Format(time.RFC3339)
-	LogFileName := fmt.Sprintf("%s%s-trackmon.log", Config.LogFileLocationPrefix, tStart)
-	f, err := os.OpenFile(LogFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	f, err := os.OpenFile(Config.LogFileLocation, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		panic(err)
 	}

@@ -25,3 +25,4 @@ _testmain.go
 
 # Configuration files
 *.conf
+*.log
