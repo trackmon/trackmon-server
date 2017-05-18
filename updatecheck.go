@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"log"
 )
 
 type GithubReleasesAssetsApiResponse struct {
@@ -20,8 +21,7 @@ type GithubReleasesApiResponse struct {
 func checkupdate(url string, version string) {
 	resp, err := http.Get(url)
 	if err != nil {
-		fmt.Println("There was a problem with autoupdate:")
-		fmt.Println(err)
+		log.Println("Autoupdate:", err)
 		return
 	}
 	defer resp.Body.Close()

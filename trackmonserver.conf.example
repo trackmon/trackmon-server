@@ -1,0 +1,7 @@
+# EXAMPLE TRACKMON SERVER CONFIG
+
+ListeningAddress = ":80"
+DatabaseAddress = "localhost"
+DatabasePassword = "banana"
+AutoUpdateChecker = true
+LogFileLocation = "trackmon.log"
