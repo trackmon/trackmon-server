@@ -2,7 +2,7 @@
 Description=Trackmon Server
 
 [Service]
-ExecStart=/usr/local/bin/trackmon-server -config=/etc/trackmon-server/trackmonserv.conf
+ExecStart=/usr/local/bin/trackmon-server -config=/etc/trackmon-server/trackmonserver.conf
 
 [Install]
 WantedBy=multi-user.target
