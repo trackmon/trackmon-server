@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
-	"io/ioutil"
+	"github.com/paulkramme/toml"
 	"log"
 	"net/http"
+	"os"
+	"time"
 )
 
 const (
@@ -41,23 +43,18 @@ var (
 )
 
 func main() {
-	fmt.Printf("TRACKMON SERVER %s", ServerVersion)
+	fmt.Printf("TRACKMON SERVER %s\n", ServerVersion)
 	fmt.Println("Copyright (c) 2017, Paul Kramme\nAll rights reserved.")
 	fmt.Println("Please report bugs to https://github.com/trackmon/trackmon-server")
 
 	// Configure flags
-	CreateConfigFlag := flag.Bool("createconfig", false, "Creates a standard configuration and exits")
-	ConfigLocation := flag.String("config", "./trackmonserv.conf", "Location of config file. Standard is ./trackmonserv")
+	ConfigLocation := flag.String("config", "./trackmonserver.conf", "Location of config file. Standard is ./trackmonserver.conf")
 	ShowLicenses := flag.Bool("licenses", false, "Shows licenses and exits")
 	ShowVersion := flag.Bool("version", false, "Shows version and exits")
 	ShowJsonVersion := flag.Bool("versionjson", false, "Shows version in json and exits")
 
 	// Check flags
 	flag.Parse()
-	if *CreateConfigFlag == true {
-		CreateConfig()
-		return
-	}
 	if *ShowLicenses == true {
 		fmt.Println("trackmon servers license\n")
 		fmt.Print(trackmonlicense)
@@ -79,13 +76,9 @@ func main() {
 
 	// Load config
 	var Config Configuration
-	Configfile, err := ioutil.ReadFile(*ConfigLocation)
+	_, err := toml.DecodeFile(*ConfigLocation, &Config)
 	if err != nil {
 		fmt.Println("Couldn't find or open config file. Create one with -createconfig")
-		panic(err)
-	}
-	err = fromjson(string(Configfile), &Config)
-	if err != nil {
 		panic(err)
 	}
 
@@ -179,6 +172,15 @@ func main() {
 	if Config.AutoUpdateChecker != false {
 		go checkupdate("https://api.github.com/repo/trackmon/trackmon-server/releases/latest", ServerVersion)
 	}
+
+	tStart := time.Now().Format(time.RFC3339)
+	LogFileName := fmt.Sprintf("%s%s-trackmon.log", Config.LogFileLocationPrefix, tStart)
+	f, err := os.OpenFile(LogFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+	log.SetOutput(f)
 
 	// Start the server
 	log.Println("Initialization Complete")
