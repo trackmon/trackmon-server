@@ -125,8 +125,14 @@ func AllAccountHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	case "PUT":
 		// Update all accounts (even if only one is updated)
-		w.WriteHeader(http.StatusMethodNotAllowed)
+		// TODO: Think about implementation
+		w.WriteHeader(http.StatusNotImplemented)
 		return
+	case "GET":
+		// TODO: Get all accounts from DB
+		// TODO: Make json out of it
+		// TODO: send it
+		w.WriteHeader(http.StatusNotImplemented)
 	}
 }
 
@@ -140,5 +146,22 @@ func HistoryHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
-	
+	switch r.Method {
+	case "PUT":
+		w.WriteHeader(http.StatusNotImplemented)
+		// TODO: TASK1: Load all database elements WHERE username == username, id == id ASYNC, parse all of that into a hash map with k = id; v = HistoryElement
+		// TODO: TASK1: Parse all json into another hash map with above specs
+		// TODO: TASK2: Compare HM1 and HM2, changed elements get into HM3 with above specs
+		// TODO: TASK2: Compare HM1 and HM2, deleted elements get into HM4 with above specs
+		// TODO: TASK3: Delete all elements on the db from HM4, change everything on db from HM3
+	case "POST":
+		w.WriteHeader(http.StatusNotImplemented)
+		// TODO: Parse json
+		// TODO: Write Json to DB
+	case "GET":
+		w.WriteHeader(http.StatusNotImplemented)
+		// TODO: get all history from database
+		// TODO: make json array out of it
+		// TODO: send it
+	}
 }
