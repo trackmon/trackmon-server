@@ -181,6 +181,7 @@ func main() {
 
 	// Start the server
 	log.Println("Initialization Complete")
+	fmt.Println("Initialization Complete")
 	log.Fatal(srv.ListenAndServe())
 }
 
