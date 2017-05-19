@@ -125,6 +125,8 @@ func AllAccountHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	case "PUT":
 		// Update all accounts (even if only one is updated)
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
 	}
 }
 
@@ -138,4 +140,5 @@ func HistoryHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
+	
 }
