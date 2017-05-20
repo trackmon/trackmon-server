@@ -8,7 +8,7 @@ The server is written in Go and tries to stick to the standard library as much a
 PostgreSQL is used as the database server, which is configured by the installer with the database layout below.
 
 ## Database Layout
-Not yet determined.
+WIP
 
 
 ## Installing
